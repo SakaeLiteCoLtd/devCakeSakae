@@ -1,0 +1,50 @@
+#version: '3'
+version: '2'
+services:
+  web:
+    container_name: php-book-app-web
+    build:
+      context: .
+      dockerfile: ./Docker/php/Dockerfile
+    volumes:
+      - .:/var/www/html:cached
+    environment:
+      - APP_DEFAULT_LOCALE=ja_JP
+      - APP_DEFAULT_TIMEZONE=Asia/Tokyo
+      - DATABASE_HOST=php-book-app-db
+      - DATABASE_USER=root
+      - DATABASE_PASS=secret
+      - DATABASE_NAME=sakaedb
+    ports:
+      - "5000:80"
+#    networks:
+#      default:
+##        ipv4_address: 172.22.0.5
+#        ipv4_address: 192.168.1.249
+
+
+  db:
+    container_name: php-book-app-db
+    build:
+      context: .
+      dockerfile: ./Docker/mysql/Dockerfile
+    volumes:
+      - ./Docker/mysql/sqls:/docker-entrypoint-initdb.d
+      - ./Docker/mysql/data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+    ports:
+      - "13306:3306"
+#    networks:#dbはnetwork不要(自動で割り当てられる)
+#      default:
+#        ipv4_address: 192.168.1.248
+
+#networks:
+#  default:
+#    driver: bridge
+#    ipam:
+#     config:
+#       - subnet: 192.168.1.0/24
+# #      - subnet: 172.22.0.0/16
+#         gateway: 192.168.1.1
+##         gateway: 172.22.0.1
